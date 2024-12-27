@@ -1,8 +1,3 @@
-# Starter pipeline
-# Start with a minimal pipeline that you can customize to build and deploy your code.
-# Add steps that build, run tests, deploy, and more:
-# https://aka.ms/yaml
-
 trigger:
 - main
 
@@ -16,25 +11,66 @@ stages:
     jobs:
       - job: BuildMobileApp
         displayName: Build App for Mobile
+        steps:
+          - script: echo Building Mobile application
+            displayName: Build mobile app
       - job: BuildReactApp
+        dependsOn: BuildMobileApp
         displayName: Build App for React
+        steps:
+          - script: echo Building react application
+            displayName: Build react app
       - job: BuildNodeApp
+        dependsOn: BuildReactApp
         displayName: Build App for Node
+        steps:
+          - script: echo node application
+            displayName: Build node app
+          
   - stage: BuildStaging
     displayName: Build for staging
+    dependsOn: BuildDev
+    condition: succeeded('BuildDev')
     jobs:
       - job: BuildMobileApp
         displayName: Build App for Mobile
+        steps:
+          - script: echo Building Mobile application
+            displayName: Build mobile app
       - job: BuildReactApp
+        dependsOn: BuildMobileApp
         displayName: Build App for React
+        steps:
+          - script: echo Building react application
+            displayName: Build react app
       - job: BuildNodeApp
+        dependsOn: BuildReactApp
         displayName: Build App for Node
+        steps:
+          - script: echo node application
+            displayName: Build node ap
+
   - stage: BuildProd
     displayName: Build for prod
+    dependsOn:
+    - BuildDev
+    - BuildStaging
+    condition: and(succeeded('BuildDev'), succeeded('BuildStaging'))
     jobs:
       - job: BuildMobileApp
         displayName: Build App for Mobile
+        steps:
+          - script: echo Building Mobile application
+            displayName: Build mobile app
       - job: BuildReactApp
+        dependsOn: BuildMobileApp
         displayName: Build App for React
+        steps:
+          - script: echo Building react application
+            displayName: Build react app
       - job: BuildNodeApp
+        dependsOn: BuildReactApp
         displayName: Build App for Node
+        steps:
+          - script: echo node application
+            displayName: Build node ap
